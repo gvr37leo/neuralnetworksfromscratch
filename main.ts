@@ -31,6 +31,14 @@ function createLayers(layersizes:number[]){
 }
 
 function run(input:number[]):number[]{
-    
+
     return null
+}
+
+function cost(actual:number[],expected:number[]){
+    var sum = 0
+    for(var i = 0; i < actual.length;i++){
+        sum += Math.pow(actual[i] - expected[i],2)
+    }
+    return sum
 }
