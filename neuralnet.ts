@@ -61,11 +61,10 @@ class NeuralNet{
         var biasNudges = new Map<number,number>()//neuronid -> value
         var layerneurons = this.neurons.getForeign('layer',layer)
 
-        var allEdgeNudges:Map<number,number>[] = []
-        var allActivationWishes:Map<number,number>[] = []
+        var edgeNudges:Map<number,number> = new Map<number,number>()//edgeid -> value
+        var allActivationWishes:Map<number,number>[] = []//this should contain duplicatie keys over the entrys in the list
 
         for(var neuron of layerneurons){
-            var edgeNudges = new Map<number,number>()//edgeid -> value
             var activationWishes = new Map<number,number>()//neuronid -> value
 
             var neuroutput = actualoutputs.get(neuron.id)
@@ -86,15 +85,15 @@ class NeuralNet{
                 activationWishes.set(edge.from,activationWishNudge)
             }
 
-            allEdgeNudges.push(edgeNudges)
             allActivationWishes.push(activationWishes)
         }
 
+        var keys = Array.from(allActivationWishes[0].keys())
         
 
         return {
             biasNudge:biasNudges,
-            weightNudges:[],
+            edgeNudges:edgeNudges,
             activationWishes:[]
         }
     }
