@@ -8,11 +8,11 @@ class NeuralNet{
 
     }
 
-    train(inputs:number[][],expecteds:number[][]){
+    train(examples:number[][],expecteds:number[][]){
         //inputs.length should equal first(layer).length
         //expected.length should equals last(layer).length
 
-        var res = this.run(inputs[0])
+        var res = this.run(examples[0])
         
         this.backprop()
 
@@ -36,23 +36,28 @@ class NeuralNet{
         // herhaal dit voor elk example(of doe mini batches) en neem de gemiddelde nudge en pas die toe
 
         //dit was 1 gradient step, blijf herhalen totdat er geen of nauwelijks meer verbetering plaatsvindt
+        var biasnudges = new Map<number,number[]>()//neuronid -> desired nudge for each example
+        var weightnudges = new Map<number,number[]>()//edgeid -> desired nudge for each example
 
-        for(var i = 0; i < inputs.length; i++){
+        for(var i = 0; i < examples.length; i++){
 
-            var example = inputs[i]
+            var example = examples[i]
             var expected = expecteds[i]
             
             var result = this.run(example)
-            var layer = this.layercount - 1
 
             var desiredMap = new Map<number,number>()//neuronid -> desiredvalue
-            this.neurons.getForeign('layer',layer).forEach((n,j) => desiredMap.set(n.id,expected[j]))
+            this.neurons.getForeign('layer',this.layercount - 1).forEach((n,j) => desiredMap.set(n.id,expected[j]))
 
             for(var i = this.layercount - 1; i >= 1; i--){
-                this.backpropagationLayerStep(layer,result,desiredMap)
+                var backpropres = this.backpropagationLayerStep(i,result,desiredMap)
+                desiredMap = backpropres.activationWishes
+                backpropres.biasNudge//add to biasnudges
+                backpropres.edgeNudges//add to weightnudges
             }
-
         }
+        //average on all the biases and weights
+        //apply on all the weights and biases
     }
 
     backprop(){}
@@ -89,12 +94,12 @@ class NeuralNet{
         }
 
         var keys = Array.from(allActivationWishes[0].keys())
-        
+        //allactivationwishes moet nog gemiddeld worden
 
         return {
             biasNudge:biasNudges,
             edgeNudges:edgeNudges,
-            activationWishes:[]
+            activationWishes:activationWishes//todo
         }
     }
 
