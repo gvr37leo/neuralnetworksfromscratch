@@ -5,3 +5,15 @@ function dot(a:number[],b:number[]){
     }
     return result
 }
+
+function to(a,b){
+    return b - a
+}
+
+function first<T>(arr:T[]){
+    return arr[0]
+}
+
+function last<T>(arr:T[]){
+    return arr[arr.length - 1]
+}
