@@ -6,7 +6,6 @@
 // https://www.youtube.com/watch?v=Ilg3gGewQ5U
 // https://www.youtube.com/watch?v=lGLto9Xd7bU
 
-
 var net = createNeuralNet([5,10,10,2])
 
 net.train([

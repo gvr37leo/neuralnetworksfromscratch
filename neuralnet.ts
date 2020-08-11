@@ -12,9 +12,25 @@ class NeuralNet{
         //inputs.length should equal first(layer).length
         //expected.length should equals last(layer).length
 
-        var res = this.run(examples[0])
         
-        this.backprop()
+        var costhistory = [this.runAndCost(examples,expecteds)]
+
+        for(var i = 0; i < 100; i++){
+            this.backpropagation(examples,expecteds)
+            costhistory.push(this.runAndCost(examples,expecteds))
+
+            var costchange = to(costhistory[costhistory.length - 2],costhistory[costhistory.length - 1])
+            if(costchange < 0){
+                console.log('improvement')
+            }else if(costchange == 0){
+                console.log('no change')
+            }else{
+                console.log('worsening')
+            }
+        }
+
+        
+         
 
         //stappen
         //voor elk voorbeeld
@@ -36,6 +52,20 @@ class NeuralNet{
         // herhaal dit voor elk example(of doe mini batches) en neem de gemiddelde nudge en pas die toe
 
         //dit was 1 gradient step, blijf herhalen totdat er geen of nauwelijks meer verbetering plaatsvindt
+        
+    }
+
+    runAndCost(input:number[][],expected:number[][]){
+        var sum = 0
+        for(var i = 0; i < input.length; i++){
+            var res = this.run(input[i])
+            sum += cost(Array.from(res.values()),expected[i])
+        }
+        return sum / input.length
+    }
+
+    backpropagation(examples:number[][],expecteds:number[][]){
+
         var biasnudges = new Map<number,number[]>()//neuronid -> desired nudge for each example
         var weightnudges = new Map<number,number[]>()//edgeid -> desired nudge for each example
 
@@ -52,25 +82,39 @@ class NeuralNet{
             for(var i = this.layercount - 1; i >= 1; i--){
                 var backpropres = this.backpropagationLayerStep(i,result,desiredMap)
                 desiredMap = backpropres.activationWishes
-                backpropres.biasNudge//add to biasnudges
-                backpropres.edgeNudges//add to weightnudges
+
+                //biasnudges
+                for(let [key,value] of backpropres.biasNudge){
+                    var arr = biasnudges.get(key) ?? []
+                    arr.push(value)
+                    biasnudges.set(key,arr)
+                }
+                //weightnudges
+                for(let [key,value] of backpropres.edgeNudges){
+                    var arr = weightnudges.get(key) ?? []
+                    arr.push(value)
+                    weightnudges.set(key,arr)
+                }
             }
         }
-        //average on all the biases and weights
-        //apply on all the weights and biases
-    }
 
-    backprop(){}
+        for(var [key,value] of biasnudges){
+            this.neurons.get(key).bias += average(value)
+        }
+        for(var [key,value] of weightnudges){
+            this.edges.get(key).weight += average(value)
+        }
+    }
 
     backpropagationLayerStep(layer:number,actualoutputs:Map<number, number>,desired:Map<number, number>){
         var biasNudges = new Map<number,number>()//neuronid -> value
         var layerneurons = this.neurons.getForeign('layer',layer)
 
-        var edgeNudges:Map<number,number> = new Map<number,number>()//edgeid -> value
-        var allActivationWishes:Map<number,number>[] = []//this should contain duplicatie keys over the entrys in the list
+        var edgeNudges = new Map<number,number>()//edgeid -> nudge
+        var activationWishes = new Map<number,number[]>()//neuronid -> nudges
 
         for(var neuron of layerneurons){
-            var activationWishes = new Map<number,number>()//neuronid -> value
+            // var activationWishes = new Map<number,number>()//neuronid -> value
 
             var neuroutput = actualoutputs.get(neuron.id)
             var desiredforneuron = desired.get(neuron.id)
@@ -87,19 +131,22 @@ class NeuralNet{
                 var edgenudge = activation * desiredchange//?
                 var activationWishNudge = desiredchange * edge.weight//?
                 edgeNudges.set(edge.id,edgenudge)
-                activationWishes.set(edge.from,activationWishNudge)
-            }
 
-            allActivationWishes.push(activationWishes)
+                var arr = activationWishes.get(edge.from) ?? []
+                arr.push(activationWishNudge)
+                activationWishes.set(edge.from,arr)
+            }
         }
 
-        var keys = Array.from(allActivationWishes[0].keys())
-        //allactivationwishes moet nog gemiddeld worden
+        var averagedActivationWish = new Map<number,number>()
+        for(var [key,value] of activationWishes){
+            averagedActivationWish.set(key,average(value))
+        }
 
         return {
             biasNudge:biasNudges,
             edgeNudges:edgeNudges,
-            activationWishes:activationWishes//todo
+            activationWishes:averagedActivationWish
         }
     }
 
