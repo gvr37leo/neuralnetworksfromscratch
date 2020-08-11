@@ -122,11 +122,9 @@ class NeuralNet{
             biasNudges.set(neuron.id,desiredchange)//?
 
             var edges = this.edges.getForeign('to',neuron.id)
-            var activations = edges.map(edge => actualoutputs.get(edge.from))
             
-            for(var i = 0; i < edges.length; i++){
-                var edge = edges[i]
-                var activation = activations[i]
+            for(var edge of edges){
+                var activation = actualoutputs.get(edge.from)
 
                 var edgenudge = activation * desiredchange//?
                 var activationWishNudge = desiredchange * edge.weight//?
