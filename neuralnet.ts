@@ -9,6 +9,7 @@ class NeuralNet{
         
         for(let i = 0; i < layersizes.length;i++){
             for(let j = 0; j < layersizes[i];j++){
+                //these can be zeros says sebastian
                 var bias = randomizeBiasAndWeight ? rng.norm() : 0
                 this.neurons.add(new Neuron(null,sigmoid,bias,i,j))
             }        
@@ -19,6 +20,8 @@ class NeuralNet{
     
             for(let to of secondneurons){
                 for(let from of firstneurons){
+                    //initializing with zero is a bad idea says sebastian
+                    //https://www.youtube.com/watch?v=8bNIkfRJZpo
                     var weight = randomizeBiasAndWeight ? rng.norm() : 0
                     this.edges.add(new Edge(null,from.id,to.id,weight))
                 }
