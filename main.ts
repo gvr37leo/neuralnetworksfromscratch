@@ -35,13 +35,13 @@ class Flower{
 
 var testflowers = [
     new Flower(30,10,FlowerType.rose),
-    new Flower(32,11,FlowerType.rose),
-    new Flower(28,13,FlowerType.rose),
-    new Flower(29,8,FlowerType.rose),
+    // new Flower(32,11,FlowerType.rose),
+    // new Flower(28,13,FlowerType.rose),
+    // new Flower(29,8,FlowerType.rose),
     new Flower(6,33,FlowerType.daisy),
-    new Flower(5,32,FlowerType.daisy),
-    new Flower(6,30,FlowerType.daisy),
-    new Flower(7,31,FlowerType.daisy),
+    // new Flower(5,32,FlowerType.daisy),
+    // new Flower(6,30,FlowerType.daisy),
+    // new Flower(7,31,FlowerType.daisy),
 ]
 
 var realflowers = [
