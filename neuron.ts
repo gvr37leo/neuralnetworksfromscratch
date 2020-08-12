@@ -11,7 +11,8 @@ class Neuron{
         public id:number,
         public activation:(val:number) => number,
         public bias:number,
-        public layer:number,   
+        public layer:number,
+        public layerorder:number,
     ){
 
     }
