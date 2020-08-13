@@ -51,7 +51,7 @@ var realflowers = [
     new Flower(6,30,FlowerType.daisy),
 ]
 
-var net = new NeuralNet([2,2,2],false)
+var net = new NeuralNet([2,2,2])
 
 
 net.train(

@@ -4,14 +4,13 @@ class NeuralNet{
     neurons = new Table<Neuron>('id',['layer'])
     edges = new Table<Edge>('id',['from','to'])
 
-    constructor(public layersizes:number[],randomizeBiasAndWeight:boolean){
+    constructor(public layersizes:number[]){
         var rng = new RNG(0)
         
         for(let i = 0; i < layersizes.length;i++){
             for(let j = 0; j < layersizes[i];j++){
                 //these can be zeros says sebastian
-                var bias = randomizeBiasAndWeight ? rng.norm() : 0
-                this.neurons.add(new Neuron(null,sigmoid,bias,i,j))
+                this.neurons.add(new Neuron(null,sigmoid,0,i,j))
             }        
         }
         for(let i = 0; i < layersizes.length - 1;i++){
@@ -22,8 +21,7 @@ class NeuralNet{
                 for(let from of firstneurons){
                     //initializing with zero is a bad idea says sebastian
                     //https://www.youtube.com/watch?v=8bNIkfRJZpo
-                    var weight = randomizeBiasAndWeight ? rng.norm() : 0
-                    this.edges.add(new Edge(null,from.id,to.id,weight))
+                    this.edges.add(new Edge(null,from.id,to.id,rng.norm()))
                 }
             }
         }
